@@ -1,0 +1,145 @@
+Instrucciones
+Segmentación de imágenes: Sartorius - Cell Instance Segmentation
+
+Implementar:
+
+Pos	Modelo
+1	Mask R-CNN (+ Swin)
+2	Hover-Net
+3	U-Net++ + Watershed
+4	Cellpose 2.0
+5	SAM / MedSAM
+Instrucciones:
+
+Análisis Exploratorio de Datos (EDA):
+
+Realice un análisis del dataset de imágenes.
+
+Revise tamaños de imágenes, cantidad de instancias de células por imagen, distribución de clases (si aplica), y características generales de los objetos a segmentar.
+
+Implementación de modelos:
+
+Entrene los cinco modelos listados anteriormente usando TensorFlow (u otra librería apropiada).
+
+Para cada modelo, ajuste hiperparámetros y realice pruebas de validación cruzada.
+
+Métricas de evaluación:
+Durante la validación cruzada y en el set de prueba, calcule las siguientes métricas:
+
+Dice Coefficient
+
+Intersection over Union (IoU)
+
+Precision
+
+Recall
+
+AUC
+
+Hausdorff Distance
+
+Balanced Accuracy
+
+Al final, entregue una tabla resumida con los valores de estas métricas para cada modelo implementado.
+
+Visualización de resultados:
+Para cada modelo, genere las siguientes figuras:
+
+Comparación visual entre imagen original, Ground Truth y predicción del modelo.
+
+Curvas de evaluación: Precision-Recall y ROC.
+
+Mapas de error: mostrar diferencias entre Ground Truth y predicción; resaltar falsos positivos (FP) en un color (ej. rojo) y falsos negativos (FN) en otro color (ej. azul).
+
+Boxplots que muestren la dispersión de métricas como Dice, IoU, Precision, Recall, AUC, Hausdorff Distance y Balanced Accuracy.
+
+Histogramas para visualizar la distribución de las métricas en todo el dataset.
+
+Reporte final:
+
+El formato de entrega será un Jupyter Book.
+
+Interprete cada figura, tabla y resultado obtenido.
+
+Compare el desempeño de los distintos modelos y explique las posibles razones de diferencias observadas.
+
+Proponga recomendaciones para mejorar la segmentación o posibles ajustes de los modelos según los resultados obtenidos.
+
+Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest
+
+Implementar:
+
+Pos	Modelo
+1	DistilBERT o RoBERTa-base fine-tuned
+2	Word2Vec + BiLSTM
+3	CNN-1D para texto (con embeddings preentrenados)
+4	TF-IDF + XGBoost (GPU version)
+5	FastText (entrenamiento local con GPU/CPU)
+Instrucciones:
+
+Análisis Exploratorio de Datos (EDA):
+
+Analice el dataset proporcionado siguiendo las recomendaciones del tutorial Complete Guide to EDA on Text Data
+
+Incluya análisis de distribución de clases, longitud de los textos, palabras más frecuentes, n-gramas relevantes y visualizaciones como word clouds o histogramas.
+
+Preprocesamiento del texto:
+
+Limpieza de datos: eliminación de símbolos, stopwords y normalización de texto.
+
+Tokenización y secuenciación según el modelo elegido (por ejemplo, para BiLSTM o CNN-1D).
+
+Aplicar embeddings preentrenados donde corresponda (Word2Vec, FastText).
+
+Implementación de modelos:
+
+Entrene los cinco modelos listados anteriormente.
+
+Para modelos basados en transformers (DistilBERT, RoBERTa), utilice fine-tuning.
+
+Para BiLSTM, realice hiperparametrización usando el siguiente param_grid:
+lstm_units: 32, 64, 128
+num_lstm_layers: 1, 2
+dropout_rate: 0.3, 0.5
+learning_rate: 0.001, 0.005
+batch_size: 32, 64
+sequence_length: 50, 100
+epochs: 20, 50
+embedding_dim: 100, 200
+
+Ajuste estos hiperparámetros para mejorar el desempeño del modelo.
+
+Entrenamiento y evaluación:
+
+Divida los datos en train, validation y test.
+
+Entrene cada modelo con el set de entrenamiento y ajuste usando el de validación.
+
+Evalúe el rendimiento en el set de prueba.
+
+Métricas de performance:
+Para comparar los modelos, calcule las siguientes métricas:
+
+Exactitud (accuracy): proporción de predicciones correctas sobre el total.
+
+Precisión (precision): proporción de predicciones positivas correctas sobre el total de predicciones positivas.
+
+Exhaustividad o recall: proporción de verdaderos positivos detectados sobre el total de positivos reales.
+
+F1-Score: media armónica de precisión y recall.
+
+Matriz de confusión: para analizar errores por clase.
+
+ROC-AUC (si aplica): especialmente útil en problemas binarios o multi-clase usando one-vs-rest.
+
+Nota: Para modelos basados en transformers, también se puede registrar el tiempo de entrenamiento y uso de memoria GPU como métricas complementarias.
+
+Reporte final:
+
+Resumen del EDA con visualizaciones y conclusiones.
+
+Detalles de cada modelo: arquitectura, hiperparámetros seleccionados, embeddings usados, etc.
+
+Tabla comparativa de métricas para todos los modelos.
+
+Análisis crítico: cuál modelo funcionó mejor, posibles razones, limitaciones y recomendaciones de mejora.
