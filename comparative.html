@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest &#8212; NLP para Análisis de Hojas de Vida</title>
+    <title>Comparativo general de modelos de clasificación de textos &#8212; NLP para Análisis de Hojas de Vida</title>
   
   
   
@@ -62,10 +62,10 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'comparative';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="EDA" href="1_EDA_Text.html" />
+    <link rel="prev" title="5. DistilBERT" href="NLP_DistilBERT.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -128,8 +128,6 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -148,7 +146,7 @@ const thebe_selector_output = ".output, .cell_output"
     
   
 
-<a class="navbar-brand logo" href="#">
+<a class="navbar-brand logo" href="intro.html">
   
   
   
@@ -162,13 +160,13 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1 current active">
-                <a class="reference internal" href="#">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
                     Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="1_EDA_Text.html"><strong>EDA</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="NLP_BiLSTM.html"><strong>1. BiLSTM con embeddings Word2Vec</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="NLP_CNN1.html"><strong>2. CNN1 con embeddings preentrenados</strong></a></li>
@@ -178,7 +176,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="NLP_TIF.html"><strong>3. XGBoost con TF-IDF</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="NLP_FastText.html"><strong>4. FastText</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="NLP_DistilBERT.html"><strong>5. DistilBERT</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparative.html"><strong>Comparativo general de modelos de clasificación de textos</strong></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Comparativo general de modelos de clasificación de textos</strong></a></li>
 </ul>
 
     </div>
@@ -250,7 +248,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/Darally06/NLP-Jarvis-Hiring.git/issues/new?title=Issue%20on%20page%20%2Fintro.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/Darally06/NLP-Jarvis-Hiring.git/issues/new?title=Issue%20on%20page%20%2Fcomparative.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -280,7 +278,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/intro.md" target="_blank"
+      <li><a href="_sources/comparative.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -364,7 +362,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest</h1>
+    <h1>Comparativo general de modelos de clasificación de textos</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -374,7 +372,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metodologia">Metodología</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rendimiento-en-el-conjunto-de-validacion-y-prueba"><strong>1. Rendimiento en el conjunto de validación y prueba</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#balance-por-clases"><strong>2. Balance por Clases</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-comparativas"><strong>3. Conclusiones Comparativas</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-del-problema"><strong>4. Conclusión del problema</strong></a></li>
 </ul>
             </nav>
         </div>
@@ -386,28 +387,160 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="procesamiento-del-lenguaje-natural-jarvis-calling-hiring-contest">
-<h1><strong>Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest</strong><a class="headerlink" href="#procesamiento-del-lenguaje-natural-jarvis-calling-hiring-contest" title="Permalink to this heading">#</a></h1>
-<p>Uso de modelos de procesamiento de lenguaje natural para categorizar las hojas de vida recibidas por la empresa Jarvis Hiring.</p>
-<section id="metodologia">
-<h2>Metodología<a class="headerlink" href="#metodologia" title="Permalink to this heading">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="comparativo-general-de-modelos-de-clasificacion-de-textos">
+<h1><strong>Comparativo general de modelos de clasificación de textos</strong><a class="headerlink" href="#comparativo-general-de-modelos-de-clasificacion-de-textos" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>Todos los modelos fueron entrenados con una división de datos 70 % entrenamiento, 15 % validación y 15 % prueba, y en los casos requeridos se aplicaron estrategias de balanceo de clases, debido al desbalance que existe entre los grupos.</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="rendimiento-en-el-conjunto-de-validacion-y-prueba">
+<h2><strong>1. Rendimiento en el conjunto de validación y prueba</strong><a class="headerlink" href="#rendimiento-en-el-conjunto-de-validacion-y-prueba" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>Accuracy (Val)</p></th>
+<th class="head"><p>F1-Macro (Val)</p></th>
+<th class="head"><p>Accuracy (Test)</p></th>
+<th class="head"><p>F1-Macro (Test)</p></th>
+<th class="head"><p>Diferencia (Val–Test)</p></th>
+<th class="head"><p>Observaciones</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>BiLSTM + Word2Vec</strong></p></td>
+<td><p>0.7688</p></td>
+<td><p>0.7652</p></td>
+<td><p>0.7105</p></td>
+<td><p>0.7055</p></td>
+<td><p>↓ 0.058</p></td>
+<td><p>Pérdida leve, generalización moderada.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CNN1D + Word2Vec</strong></p></td>
+<td><p>0.7070</p></td>
+<td><p>0.7016</p></td>
+<td><p>0.6622</p></td>
+<td><p>0.6531</p></td>
+<td><p>↓ 0.045</p></td>
+<td><p>Pérdida leve; buena generalización.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>XGBoost + TF-IDF</strong></p></td>
+<td><p>0.8199</p></td>
+<td><p>0.8191</p></td>
+<td><p>0.8123</p></td>
+<td><p>0.8115</p></td>
+<td><p>↓ 0.008</p></td>
+<td><p>Comportamiento estable, generaización sólida</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>FastText</strong></p></td>
+<td><p>0.7823</p></td>
+<td><p>0.7809</p></td>
+<td><p>0.7078</p></td>
+<td><p>0.7008</p></td>
+<td><p>↓ 0.075</p></td>
+<td><p>Pérdida notoria, generalización moderada.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>DistilBERT</strong></p></td>
+<td><p>0.8441</p></td>
+<td><p>—</p></td>
+<td><p>0.8065</p></td>
+<td><p>0.8067</p></td>
+<td><p>↓ 0.038</p></td>
+<td><p>Pérdida leve, generalización sólida.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>El modelo <strong>XGBoost con TF-IDF</strong> presenta la mayor estabilidad entre los conjuntos de validación y prueba, con apenas un descenso del 0.8 %. Esto indica un excelente equilibrio y mínima tendencia al sobreajuste. <strong>DistilBERT</strong> obtiene el mayor rendimiento absoluto en validación (Acc = 0.84) y test (Acc = 0.81), confirmando su capacidad para capturar representaciones semánticas más profundas.
+Por otro lado, <strong>FastText</strong> evidencia una brecha mayor entre validación y prueba (≈ 7.5 %), lo que sugiere menor capacidad de generalización frente a datos nuevos.
+Los modelos <strong>BiLSTM</strong> y <strong>CNN1D</strong>, basados en Word2Vec, muestran un rendimiento intermedio, con resultados consistentes pero inferiores a los modelos basados en TF-IDF y transformadores.</p>
+</section>
+<hr class="docutils" />
+<section id="balance-por-clases">
+<h2><strong>2. Balance por Clases</strong><a class="headerlink" href="#balance-por-clases" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Clase</p></th>
+<th class="head"><p>Mejor F1-score</p></th>
+<th class="head"><p>Modelos Destacados</p></th>
+<th class="head"><p>Peor F1-score</p></th>
+<th class="head"><p>Modelos con Bajo Rendimiento</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Negocios y Finanzas</strong></p></td>
+<td><p>0.90 (DistilBERT)</p></td>
+<td><p>XGBoost, DistilBERT</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Tecnología y Ciencia</strong></p></td>
+<td><p>0.90 (DistilBERT)</p></td>
+<td><p>XGBoost, BiLSTM</p></td>
+<td><p>0.68 (CNN1D)</p></td>
+<td><p>CNN1D</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Servicios Profesionales y Públicos</strong></p></td>
+<td><p>0.81 (XGBoost)</p></td>
+<td><p>XGBoost, FastText</p></td>
+<td><p>0.67 (CNN1D)</p></td>
+<td><p>CNN1D</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Creatividad y Producción</strong></p></td>
+<td><p>0.81 (XGBoost)</p></td>
+<td><p>XGBoost</p></td>
+<td><p>0.59 (CNN1D)</p></td>
+<td><p>CNN1D</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Otros y Especializados</strong></p></td>
+<td><p>0.76 (XGBoost)</p></td>
+<td><p>XGBoost</p></td>
+<td><p>0.55 (CNN1D)</p></td>
+<td><p>CNN1D</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>El <strong>modelo XGBoost con TF-IDF</strong> presenta el mejor balance de desempeño entre clases, con valores de F1-score altos y homogéneos en todas las categorías (rango ≈ 0.76–0.86). Esto sugiere que el modelo logra capturar patrones representativos incluso en clases con menor frecuencia. <strong>DistilBERT</strong> sobresale en las clases con mayor carga semántica (<em>Negocios y Finanzas</em>, <em>Tecnología y Ciencia</em>), superando el 0.90 en F1, pero muestra leves caídas en <em>Servicios Profesionales</em> y <em>Otros</em>.
+En contraste, el <strong>modelo CNN1D</strong> muestra una fuerte variación entre clases (de 0.55 a 0.78), evidenciando menor consistencia interclase.
+<strong>BiLSTM</strong> y <strong>FastText</strong> mantienen un rendimiento medio, cercanos al 0.70 de F1-macro, aunque sin sobresalir en ninguna categoría específica.</p>
+</section>
+<hr class="docutils" />
+<section id="conclusiones-comparativas">
+<h2><strong>3. Conclusiones Comparativas</strong><a class="headerlink" href="#conclusiones-comparativas" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>Limpieza de textos: eliminación de símbolos, stopwords y normalización de texto.</p></li>
-<li><p>Implementación de modelos:</p>
+<li><p><strong>Rendimiento global:</strong></p>
 <ul class="simple">
-<li><p>DistilBERT</p></li>
-<li><p>BiLSTM con Word2Vec</p></li>
-<li><p>CNN-1D (con embeddings preentrenados)</p></li>
-<li><p>TF-IDF + XGBoost</p></li>
-<li><p>FastText</p></li>
+<li><p>El modelo más consistente y robusto, conmejor desempeño general es <strong>XGBoost + TF-IDF</strong> (Acc = 0.812), seguido muy de cerca por <strong>DistilBERT</strong> (Acc = 0.806).</p></li>
+<li><p>Ambos modelos evidencian excelente capacidad de generalización y estabilidad entre validación y prueba, asi como una representación estable entre las distintas macro categorias de empleo. Aunque <strong>DistilBERT</strong> captura mejor ciertas clases, es el que mayor recursos computacionales compromete.</p></li>
 </ul>
 </li>
-<li><p>Entrenamiento y evaluación de rendimiento en el conjunto test.</p></li>
-<li><p>Reporte comparativo de rendimiento.</p></li>
+<li><p><strong>Modelos intermedios:</strong></p>
+<ul class="simple">
+<li><p><strong>BiLSTM</strong> logra resultados sólidos (Acc = 0.71, F1 = 0.70), destacando su estabilidad y coherencia entre validación y test.</p></li>
+<li><p><strong>FastText</strong> obtiene cifras similares, aunque con una ligera pérdida de rendimiento al pasar al conjunto de prueba. Al ser el más liviano de todos (con menor tiempo de entrenamiento) es una alternativa eficiente si se prioriza la velocidad sobre la precisión.</p></li>
+</ul>
+</li>
+<li><p><strong>Modelos menos consistentes:</strong></p>
+<ul class="simple">
+<li><p><strong>CNN1D</strong>, pese a entrenar eficientemente, muestra menor balance entre clases y una caída más pronunciada en el conjunto de prueba.</p></li>
+</ul>
+</li>
+<li><p><strong>Balance de clases:</strong></p>
+<ul class="simple">
+<li><p>Las clases <strong>“Negocios y Finanzas”</strong> y <strong>“Tecnología y Ciencia”</strong> son consistentemente las mejor clasificadas por todos los modelos.</p></li>
+<li><p>Las categorías <strong>“Creatividad y Producción”</strong> y <strong>“Otros y Especializados”</strong> presentan los desempeños más bajos, coincidiendo con su mayor diversidad léxica y posible menor representación en los datos.</p></li>
+</ul>
+</li>
 </ol>
 </section>
-<div class="toctree-wrapper compound">
-</div>
+<section id="conclusion-del-problema">
+<h2><strong>4. Conclusión del problema</strong><a class="headerlink" href="#conclusion-del-problema" title="Permalink to this heading">#</a></h2>
+<p>De acuerdo con los resultados experimentales, los modelos presentan desempeños diferenciados tanto en precisión global como en equilibrio entre clases. En el contexto de clasificación de hojas de vida dentro de la empresa <strong>Jarvis</strong> para identificar el perfil profesional de cada candidato, los resultados permiten establecer que para la empresa, el <strong>modelo XGBoost con TF-IDF</strong> representa la mejor opción práctica:</p>
+<ul class="simple">
+<li><p>Ofrece alto rendimiento y estabilidad</p></li>
+<li><p>Requiere menor tiempo de entrenamiento</p></li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -440,14 +573,14 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="right-next"
-       href="1_EDA_Text.html"
-       title="next page">
+    <a class="left-prev"
+       href="NLP_DistilBERT.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><strong>EDA</strong></p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><strong>5. DistilBERT</strong></p>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -465,7 +598,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metodologia">Metodología</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rendimiento-en-el-conjunto-de-validacion-y-prueba"><strong>1. Rendimiento en el conjunto de validación y prueba</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#balance-por-clases"><strong>2. Balance por Clases</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-comparativas"><strong>3. Conclusiones Comparativas</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-del-problema"><strong>4. Conclusión del problema</strong></a></li>
 </ul>
   </nav></div>
 
