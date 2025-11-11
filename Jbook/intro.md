@@ -1,4 +1,4 @@
-# **JARVIS HIRING**
+# **Procesamiento del Lenguaje Natural: Jarvis Calling Hiring Contest**
 
 Uso de modelos de procesamiento de lenguaje natural para categorizar las hojas de vida recibidas por la empresa Jarvis Hiring.
 

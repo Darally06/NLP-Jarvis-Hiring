@@ -3,4 +3,6 @@ root: intro
 chapters:
 - file: 1_EDA_Text
 - file: NLP_BiLSTM
-
+- file: NLP_CNN1
+- file: NLP_TIF
+- file: NLP_FastText
