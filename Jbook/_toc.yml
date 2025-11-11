@@ -4,4 +4,6 @@
 format: jb-book
 root: intro
 chapters:
-- file: EDA+PRE
+- file: 1_EDA_Text
+  title: Exploratory Data Analysis (EDA) de Texto
+
