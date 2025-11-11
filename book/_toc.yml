@@ -7,3 +7,4 @@ chapters:
 - file: NLP_TIF
 - file: NLP_FastText
 - file: NLP_DistilBERT
+- file: comparative
