@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Modelos NLP &#8212; NLP para Análisis de Hojas de Vida</title>
+    <title>5. DistilBERT &#8212; NLP para Análisis de Hojas de Vida</title>
   
   
   
@@ -175,7 +175,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 <li class="toctree-l1"><a class="reference internal" href="NLP_TIF.html"><strong>3. XGBoost con TF-IDF</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="NLP_FastText.html"><strong>4. FastText</strong></a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Modelos NLP</strong></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>5. DistilBERT</strong></a></li>
 </ul>
 
     </div>
@@ -277,7 +277,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/NLP_DistilBERT.rst" target="_blank"
+      <li><a href="_sources/NLP_DistilBERT.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -287,7 +287,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.rst</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
 </li>
       
@@ -361,7 +361,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Modelos NLP</h1>
+    <h1>5. DistilBERT</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -371,7 +371,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distilbert">DistilBERT</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelo">🔹Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento">🔹 Entrenamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-de-rendimiento">🔹 Evaluación de rendimiento</a></li>
 </ul>
             </nav>
         </div>
@@ -383,92 +385,52 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="modelos-nlp">
-<h1><strong>Modelos NLP</strong><a class="headerlink" href="#modelos-nlp" title="Permalink to this heading">#</a></h1>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># CONFIGURACIÓN INICIAL</span>
-<span class="c1"># =========================</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="distilbert">
+<h1><strong>5. DistilBERT</strong><a class="headerlink" href="#distilbert" title="Permalink to this heading">#</a></h1>
+<p><strong>DistilBERT</strong> es un modelo de lenguaje basado en la arquitectura Transformer, entrenado mediante knowledge distillation a partir de BERT.</p>
+<p>Recibe:</p>
+<ul class="simple">
+<li><p>Una secuencia de tokens numéricos que representan el texto.</p></li>
+<li><p>Una máscara binaria de tokens atentidos e ignorados</p></li>
+<li><p>Labels de clasificación</p></li>
+</ul>
+<p>Estas entradas se generan usando el tokenizador     <code class="docutils literal notranslate"><span class="pre">_DistilBertTokenizerFast_</span></code>  , que convierte texto en tensores compatibles con el modelo.</p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING:tensorflow:From c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">ast</span><span class="o">,</span><span class="w"> </span><span class="nn">itertools</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
-
-<span class="n">SEED</span> <span class="o">=</span> <span class="mi">42</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">get_scheduler</span><span class="p">,</span>
-    <span class="n">DistilBertTokenizerFast</span><span class="p">,</span>
-    <span class="n">DistilBertForSequenceClassification</span><span class="p">,</span>
-    <span class="n">TrainingArguments</span><span class="p">,</span>
-    <span class="n">Trainer</span>
-<span class="p">)</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
-<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using device: </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">optim</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.utils.rnn</span><span class="w"> </span><span class="kn">import</span> <span class="n">pad_sequence</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.class_weight</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_class_weight</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelEncoder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">classification_report</span><span class="p">,</span>
-    <span class="n">accuracy_score</span><span class="p">,</span>
-    <span class="n">confusion_matrix</span><span class="p">,</span>
-    <span class="n">precision_score</span><span class="p">,</span>
-    <span class="n">recall_score</span><span class="p">,</span>
-    <span class="n">f1_score</span>
-<span class="p">)</span>
+Using device: cpu
 </pre></div>
 </div>
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MODULO DE MANEJO DE DATOS</span>
-<span class="c1"># ---------------------------------</span>
-
-<span class="c1">#  [Carga de datos]</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;../Data/clean_words.json&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;macro_label&#39;</span><span class="p">:</span> <span class="s1">&#39;Category&#39;</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registros totales: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Codificar etiquetas</span>
-<span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Category&quot;</span><span class="p">])</span>
-
-<span class="c1"># Dividir dataset</span>
-<span class="n">train</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">SEED</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
-<span class="n">val</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">SEED</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">temp</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">])</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distribución de los datos: </span><span class="se">\n</span><span class="s2">Train: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">}</span><span class="s2"> | Val: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s2"> | Test: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Registros totales: 2483
+Distribución de los datos: 
+Train: 1738 | Val: 372 | Test: 373
 </pre></div>
 </div>
 </div>
 </div>
-<section id="distilbert">
-<h2>DistilBERT<a class="headerlink" href="#distilbert" title="Permalink to this heading">#</a></h2>
-<p>DistilBERT es un modelo de lenguaje basado en la arquitectura Transformer, entrenado mediante knowledge distillation a partir de BERT.</p>
-<p>Recibe:
-* Una secuencia de tokens numéricos que representan el texto.
-* Una máscara binaria de tokens atentidos e ignorados
-* Labels de clasificación</p>
-<p>Estas entradas se generan usando el tokenizador <em>DistilBertTokenizerFast</em> , que convierte texto en tensores compatibles con el modelo.</p>
+<section id="modelo">
+<h2>🔹Modelo<a class="headerlink" href="#modelo" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DEFINIR TEXTOS Y ETIQUETAS</span>
+
+<span class="n">train_texts</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s2">&quot;clean_text&quot;</span><span class="p">]</span>
+<span class="n">train_labels</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+
+<span class="n">val_texts</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;clean_text&quot;</span><span class="p">]</span>
+<span class="n">val_labels</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+
+<span class="n">test_texts</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;clean_text&quot;</span><span class="p">]</span>
+<span class="n">test_labels</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tokenización y codificación de etiquetas</span>
@@ -477,11 +439,12 @@ document.write(`
 <span class="c1"># Tokenización</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">tokenize_texts</span><span class="p">(</span><span class="n">texts</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">tokenizer</span><span class="p">(</span>
-        <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">],</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">texts</span><span class="p">),</span>
         <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span>
     <span class="p">)</span>
+
 
 <span class="n">train_texts</span> <span class="o">=</span> <span class="n">train_texts</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_labels</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_texts</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
@@ -518,7 +481,7 @@ document.write(`
 <span class="n">val_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">val_encodings</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)</span>
 <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">test_encodings</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 
-<span class="n">num_labels</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+<span class="n">num_labels</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
 
 <span class="c1"># Modelo</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">DistilBertForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
@@ -535,6 +498,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </div>
 </div>
 </div>
+<p>Se define una clase <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>  personalizada para estructurar los datos tokenizados y sus etiquetas. Esto permite crear objetos compatibles con los DataLoader de PyTorch. Luego se instancian los datasets de entrenamiento, validación y prueba. Finalmente, se carga el modelo <strong>DistilBERT</strong> base con una capa de clasificación ajustada al número de clases (<code class="docutils literal notranslate"><span class="pre">num_labels</span></code>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Función de métricas personalizada</span>
@@ -573,7 +537,26 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </div>
 </div>
 </div>
-<div class="cell docutils container">
+<p>Se define la función <code class="docutils literal notranslate"><span class="pre">compute_metrics</span></code> para evaluar el rendimiento del modelo en cada época, calculando <strong>accuracy</strong>, <strong>F1-score</strong>, <strong>precisión</strong> y <strong>recall ponderados</strong>.</p>
+<p>En los <code class="docutils literal notranslate"><span class="pre">TrainingArguments</span></code>, se establecen los hiperparámetros, comunes para fine-tuning de modelos basados en Transformers:</p>
+<ul class="simple">
+<li><p><strong>learning_rate = 5e-5</strong>, un valor estándar y estable para evitar sobreajuste en modelos preentrenados;</p></li>
+<li><p><strong>batch_size = 16</strong>, balance entre eficiencia y uso de memoria GPU;</p></li>
+<li><p><strong>num_train_epochs = 3</strong>, suficiente para que el modelo converja sin sobreentrenarse;</p></li>
+<li><p><strong>weight_decay = 0.01</strong>, para regularización ligera;</p></li>
+<li><p><strong>eval/save/logging_strategy = ‘epoch’</strong>, con el fin de monitorear métricas y guardar el mejor modelo tras cada época;</p></li>
+<li><p><strong>load_best_model_at_end=True</strong>, asegurando que se retenga el modelo con mayor precisión.</p></li>
+</ul>
+<p>Finalmente, el objeto <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> centraliza el proceso de entrenamiento y validación.</p>
+</section>
+<section id="entrenamiento">
+<h2>🔹 Entrenamiento<a class="headerlink" href="#entrenamiento" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Entrenamiento</span>
 <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -589,16 +572,17 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 </pre></div>
 </div>
 </div>
+</details>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\danie\anaconda3\envs\NLP\Lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   warnings.warn(warn_msg)
 </pre></div>
 </div>
 <div class="output text_html">
     <div>
       
-      <progress value='5' max='165' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      [  5/165 21:24 < 19:01:34, 0.00 it/s, Epoch 0.07/3]
+      <progress value='165' max='165' style='width:300px; height:20px; vertical-align: middle;'></progress>
+      [165/165 7:07:53, Epoch 3/3]
     </div>
     <table border="1" class="dataframe">
   <thead>
@@ -606,52 +590,106 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
       <th>Epoch</th>
       <th>Training Loss</th>
       <th>Validation Loss</th>
+      <th>Accuracy</th>
+      <th>F1</th>
+      <th>Precision</th>
+      <th>Recall</th>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td>1</td>
+      <td>1.437700</td>
+      <td>1.072763</td>
+      <td>0.596774</td>
+      <td>0.567627</td>
+      <td>0.593688</td>
+      <td>0.596774</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.901500</td>
+      <td>0.645889</td>
+      <td>0.790323</td>
+      <td>0.789531</td>
+      <td>0.794811</td>
+      <td>0.790323</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.593800</td>
+      <td>0.560765</td>
+      <td>0.844086</td>
+      <td>0.842128</td>
+      <td>0.846550</td>
+      <td>0.844086</td>
+    </tr>
   </tbody>
-</table><p></div></div>
+</table><p></div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  warnings.warn(warn_msg)
+c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  warnings.warn(warn_msg)
+</pre></div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validación</span>
-<span class="n">val_metrics</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">)</span>
-<span class="n">val_acc</span> <span class="o">=</span> <span class="n">val_metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;eval_accuracy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;\Accuracy de validación: </span><span class="si">{</span><span class="n">val_acc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Prueba</span>
-<span class="n">test_metrics</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span>
-<span class="n">test_acc</span> <span class="o">=</span> <span class="n">test_metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;eval_accuracy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Accuracy de prueba: </span><span class="si">{</span><span class="n">test_acc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># 4. Predicciones y reporte de clasificación</span>
-<span class="n">preds_output</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">)</span>
-<span class="n">preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">preds_output</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">true_labels</span> <span class="o">=</span> <span class="n">preds_output</span><span class="o">.</span><span class="n">label_ids</span>
-
-<span class="c1"># Reporte</span>
-<span class="n">report</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span>
-    <span class="n">true_labels</span><span class="p">,</span>
-    <span class="n">preds</span><span class="p">,</span>
-    <span class="n">target_names</span><span class="o">=</span><span class="n">le</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
-    <span class="n">digits</span><span class="o">=</span><span class="mi">4</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Classification Report:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
-<span class="n">report_path</span> <span class="o">=</span> <span class="s2">&quot;./classification_report.txt&quot;</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">report_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;DistilBERT Classification Report</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tiempo de entrenamiento: </span><span class="si">{</span><span class="n">train_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> segundos</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy validación: </span><span class="si">{</span><span class="n">val_acc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy prueba: </span><span class="si">{</span><span class="n">test_acc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Reporte guardado en: </span><span class="si">{</span><span class="n">report_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Tiempo total de entrenamiento: 25816.38 segundos
+Modelo guardado en: ./distilbert_model
 </pre></div>
 </div>
 </div>
 </div>
+<p>Durante el entrenamiento se observa una <strong>mejora progresiva y consistente</strong> en las métricas a lo largo de las tres épocas. La <strong>pérdida de entrenamiento</strong> desciende de <em>1.43</em> a <em>0.59</em>, y la <strong>pérdida de validación</strong> disminuye de <em>1.07</em> a <em>0.56</em>, lo que indica una buena capacidad de aprendizaje sin señales de sobreajuste.</p>
+<p>El modelo alcanza una <strong>precisión final (accuracy)</strong> de <strong>0.84</strong> y un <strong>F1-score de 0.84</strong>, valores muy cercanos entre sí, lo cual refleja un equilibrio adecuado entre precisión y exhaustividad. Las métricas de <strong>precisión (0.85)</strong> y <strong>recall (0.84)</strong> confirman que el modelo logra reconocer correctamente la mayoría de las clases sin sacrificar la consistencia en las predicciones.</p>
+<p>En conjunto, los resultados sugieren que el entrenamiento fue exitoso: el modelo convergió de forma estable y alcanzó un rendimiento alto en validación, lo que evidencia una <strong>buena capacidad de generalización</strong> tras solo tres épocas de ajuste fino.</p>
+</section>
+<section id="evaluacion-de-rendimiento">
+<h2>🔹 Evaluación de rendimiento<a class="headerlink" href="#evaluacion-de-rendimiento" title="Permalink to this heading">#</a></h2>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  warnings.warn(warn_msg)
+</pre></div>
+</div>
+<div class="output text_html"></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>\Accuracy de validación: 0.8441
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  warnings.warn(warn_msg)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Accuracy de prueba: 0.8065
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\TAWTOCA\anaconda3\envs\machine\lib\site-packages\torch\utils\data\dataloader.py:668: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  warnings.warn(warn_msg)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Classification Report:
+
+                                    precision    recall  f1-score   support
+
+          Creatividad y Producción     0.7778    0.7778    0.7778        27
+               Negocios y Finanzas     0.9149    0.8958    0.9053        48
+            Otros y Especializados     0.7568    0.7000    0.7273        40
+Servicios Profesionales y Públicos     0.6667    0.7222    0.6933        36
+              Tecnología y Ciencia     0.8889    0.9143    0.9014        35
+
+                          accuracy                         0.8065       186
+                         macro avg     0.8010    0.8020    0.8010       186
+                      weighted avg     0.8080    0.8065    0.8067       186
+
+ Reporte guardado en: C:/DeepLearning/DL_Proyecto_3/classification_report.txt
+</pre></div>
+</div>
+</div>
+</div>
+<p>El modelo logra un <strong>excelente rendimiento general</strong>, con una <strong>exactitud de validación del 84.4 %</strong> y una <strong>exactitud de prueba del 80.6 %</strong>, lo que indica que mantiene un desempeño sólido al enfrentarse a datos no vistos, con mínima pérdida de generalización.</p>
+<p>El <strong>reporte de clasificación</strong> muestra un comportamiento equilibrado entre las distintas categorías, sin clases dominantes que distorsionen las métricas. Las clases con mejor desempeño son:</p>
+<ul class="simple">
+<li><p><strong>Negocios y Finanzas (F1 = 0.91)</strong> y <strong>Tecnología y Ciencia (F1 = 0.90)</strong>, donde el modelo identifica correctamente la mayoría de las instancias.</p></li>
+</ul>
+<p>Mientras que categorías más heterogéneas como <strong>Servicios Profesionales y Públicos (F1 = 0.69)</strong> y <strong>Otros y Especializados (F1 = 0.73)</strong> presentan una leve disminución en recall, lo que sugiere una mayor confusión con clases vecinas en el espacio semántico.</p>
+<p>El <strong>promedio macro (F1 = 0.80)</strong> y el <strong>promedio ponderado (F1 = 0.81)</strong> confirman que el modelo mantiene un rendimiento equilibrado entre clases grandes y pequeñas.
+En conjunto, los resultados evidencian que el <strong>DistilBERT fine-tuned</strong> logró una <strong>representación robusta del texto y una clasificación precisa</strong>, con un tiempo de entrenamiento total de aproximadamente <strong>7 horas y 10 minutos</strong>.</p>
 </section>
 </section>
 
@@ -710,7 +748,9 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distilbert">DistilBERT</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelo">🔹Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento">🔹 Entrenamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-de-rendimiento">🔹 Evaluación de rendimiento</a></li>
 </ul>
   </nav></div>
 

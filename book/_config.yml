@@ -7,7 +7,7 @@ author: Daniella Guerra - Tawny Torres
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: force
+  execute_notebooks: "off"
 
 
 # Information about where the book exists on the web
